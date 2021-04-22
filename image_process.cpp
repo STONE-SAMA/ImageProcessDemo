@@ -352,15 +352,9 @@ int MedianProcess(Mat &host_src)
 }
 
 //腐蚀
-int myPicErode()
+int myPicErode(Mat &image)
 {
-	Mat host_img = imread("F:/cuda_pictures/blobs.png", 0);
-	if (!host_img.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
+	Mat host_img = image;
 	GpuMat d_img, d_result;
 	//定义形态操作的结构元素
 	Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
@@ -371,28 +365,19 @@ int myPicErode()
 	Mat h_result;
 	d_result.download(h_result);
 
-	imshow("原始图像", host_img);
-	imshow("腐蚀图像", h_result);
+	//imshow("原始图像", host_img);
+	//imshow("腐蚀图像", h_result);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", h_result);
 
 	waitKey(0);
 	return 0;
 }
 
 //膨胀
-int myPicDilate()
+int myPicDilate(Mat& image)
 {
-	Mat host_img = imread("F:/cuda_pictures/blobs.png", 0);
-	//Mat host_img = imread("F:/cuda_pictures/senna.jpg");
-	if (!host_img.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
-	//将原图转化为灰度图
-	//GpuMat src, gray;
-	//src.upload(host_img);
-	//cuda::cvtColor(src, gray, COLOR_BGR2GRAY);
+	Mat host_img = image;
 	GpuMat d_img, d_result;
 	//定义形态操作的结构元素
 	Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
@@ -404,24 +389,27 @@ int myPicDilate()
 	Mat h_result;
 	d_result.download(h_result);
 
-	imshow("原始图像", host_img);
-	imshow("膨胀图像", h_result);
+	//imshow("原始图像", host_img);
+	//imshow("膨胀图像", h_result);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", h_result);
 
 	waitKey(0);
 	return 0;
 }
 
 //sobel算子
-int mySobel()
+int mySobel(Mat &image)
 {
-	Mat host_img = imread("F:/cuda_pictures/senna.jpg");
-	if (!host_img.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
-	imshow("原图像", host_img);
+	//Mat host_img = imread("F:/cuda_pictures/senna.jpg");
+	//if (!host_img.data)
+	//{
+	//	cout << "读取图片错误，请重新输入正确路径！\n";
+	//	system("pause");
+	//	return -1;
+	//}
+	//imshow("原图像", host_img);
+	Mat host_img = image;
 	Mat result, result_x, result_y;
 
 	Mat kernel_x = (Mat_<float>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1);
@@ -431,23 +419,20 @@ int mySobel()
 	filter2D(host_img, result_y, CV_8UC3, kernel_y);
 
 	cv::add(result_x, result_y, result);
-	cv::imshow("Sobel锐化", result);
+	//cv::imshow("Sobel锐化", result);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", result);
 
 	waitKey(0);
 	return 0;
 }
 
 //拉普拉斯滤波器
-int myLaplacianFilter()
+int myLaplacianFilter(Mat& image)
 {
 	//Mat host_img = imread("F:/cuda_pictures/blobs.png", 0);
-	Mat host_img = imread("F:/cuda_pictures/senna.jpg");
-	if (!host_img.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
+	Mat host_img = image;
+
 	//将原图转化为灰度图
 	GpuMat src, gray;
 
@@ -469,24 +454,22 @@ int myLaplacianFilter()
 
 	Mat h_result;
 	d_result.download(h_result);
-	cv::imshow("原始图像", host_img);
-	cv::imshow("拉普拉斯锐化", h_result);
-
-	cout << "cuda time = " << double(end_cuda - start_cuda) / CLOCKS_PER_SEC << "s" << endl;
+	//cv::imshow("原始图像", host_img);
+	//cv::imshow("拉普拉斯锐化", h_result);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", h_result);
+	
+	//cout << "cuda time = " << double(end_cuda - start_cuda) / CLOCKS_PER_SEC << "s" << endl;
 
 	waitKey(0);
 	return 0;
 }
 //拉普拉斯图像锐化
-int myLaplacianSharpen()
+int myLaplacianSharpen(Mat &image)
 {
-	Mat host_img = imread("F:/cuda_pictures/tree.jpg");
-	if (!host_img.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
+	//Mat host_img = imread("F:/cuda_pictures/tree.jpg");
+	Mat host_img = image;
+	/*
 	//调整大小
 	GpuMat d_img, d_result;
 	d_img.upload(host_img);
@@ -495,13 +478,16 @@ int myLaplacianSharpen()
 	cuda::resize(d_img, d_result, cv::Size(0.7 * width, 0.7 * height), cv::INTER_LINEAR);
 	Mat h_result;
 	d_result.download(h_result);
-
-	imshow("原图像", host_img);
+	*/
+	//imshow("原图像", host_img);
 	Mat imageEnhance;
 	Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, 0, 5, 0, 0, -1, 0);
 	//Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, 0, 4, 0, 0, -1, 0);
-	filter2D(h_result, imageEnhance, CV_8UC3, kernel);
-	imshow("拉普拉斯算子图像增强效果", imageEnhance);
+	//filter2D(h_result, imageEnhance, CV_8UC3, kernel);
+	filter2D(host_img, imageEnhance, CV_8UC3, kernel);
+	//imshow("拉普拉斯算子图像增强效果", imageEnhance);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", imageEnhance);
 
 	waitKey(0);
 	return 0;

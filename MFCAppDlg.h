@@ -50,4 +50,8 @@ public:
 	afx_msg void OnEnChangefilepath();
 	// 图像处理结果显示
 	CStatic pic_res_control;
+	afx_msg void OnBnClickederode();
+	afx_msg void OnBnClickeddilate();
+	afx_msg void OnBnClickedlaplacian();
+	afx_msg void OnBnClickedsobel();
 };

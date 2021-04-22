@@ -17,6 +17,11 @@
 #define edit_filepath                   1012
 #define btn_binary                      1013
 #define pic_res                         1014
+#define btn_erode                       1015
+#define btn_dilate                      1016
+#define IDC_BUTTON3                     1017
+#define btn_sobel                       1017
+#define btn_laplacian                   1018
 
 // Next default values for new objects
 // 
@@ -24,7 +29,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1019
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

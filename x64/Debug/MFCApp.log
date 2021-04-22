@@ -1,2 +1,14 @@
 ﻿  MFCAppDlg.cpp
+  image_process.cpp
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,58): warning C4244: “参数”: 从“double”转换到“_Tp”，可能丢失数据
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,58): warning C4244:         with
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,58): warning C4244:         [
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,58): warning C4244:             _Tp=int
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,58): warning C4244:         ]
+  正在生成代码...
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,45): warning C4244: “参数”: 从“double”转换到“_Tp”，可能丢失数据
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,45): warning C4244:         with
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,45): warning C4244:         [
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,45): warning C4244:             _Tp=int
+D:\CUDA_workplace\MFCApp\image_process.cpp(511,45): warning C4244:         ]
   MFCApp.vcxproj -> D:\CUDA_workplace\MFCApp\x64\Debug\MFCApp.exe

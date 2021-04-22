@@ -68,6 +68,10 @@ BEGIN_MESSAGE_MAP(CMFCAppDlg, CDialogEx)
 	ON_BN_CLICKED(btn_median_filter, &CMFCAppDlg::OnBnClickedmedianfilter)
 	ON_BN_CLICKED(btn_choose, &CMFCAppDlg::OnBnClickedchoose)
 	ON_BN_CLICKED(btn_binary, &CMFCAppDlg::OnBnClickedbinary)
+	ON_BN_CLICKED(btn_erode, &CMFCAppDlg::OnBnClickederode)
+	ON_BN_CLICKED(btn_dilate, &CMFCAppDlg::OnBnClickeddilate)
+	ON_BN_CLICKED(btn_laplacian, &CMFCAppDlg::OnBnClickedlaplacian)
+	ON_BN_CLICKED(btn_sobel, &CMFCAppDlg::OnBnClickedsobel)
 END_MESSAGE_MAP()
 
 
@@ -181,20 +185,45 @@ void CMFCAppDlg::OnBnClickedchoose()
 	GetDlgItem(pic_res)->ShowWindow(TRUE);
 }
 
-
-//拉普拉斯锐化
+//锐化
 void CMFCAppDlg::OnBnClickedlaplacianfilter()
 {
+	//拉普拉斯锐化
+	int myLaplacianSharpen(Mat & image);
+	string str_src = strFilePath.GetBuffer(0);
+	Mat host_src = imread(str_src, IMREAD_COLOR);
+	if (!host_src.data)
+	{
+		MessageBox("读取图片错误，请重新输入正确路径！", "error");
+		return;
+	}
 
-	int myLaplacianSharpen();
-	myLaplacianSharpen();
+	myLaplacianSharpen(host_src);
+
+	CString result_path = "F:/image_result/result.jpg";
+	CRect rect;
+	CImage image;
+	image.Load(result_path);
+	int cx = image.GetWidth();
+	int cy = image.GetHeight();
+	CWnd* pWnd = GetDlgItem(pic_res);//获取控件句柄
+	//获取Picture Control控件的区域的大小  
+	pWnd->GetClientRect(&rect);
+	CDC* pDc = pWnd->GetDC();//获取picture control的DC  
+	//设置指定设备环境中的位图拉伸模式
+	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+	SetStretchBltMode(pDc->m_hDC, ModeOld);
+	//释放资源
+	ReleaseDC(pDc);
 
 }
 
-
-//平均滤波
+//平滑
 void CMFCAppDlg::OnBnClickedaveragefilter()
 {
+	//平均滤波
 	void myAverageFilter(Mat & image);
 	string str_src = strFilePath.GetBuffer(0);
 	Mat host_src = imread(str_src, IMREAD_COLOR);
@@ -256,10 +285,9 @@ void CMFCAppDlg::OnBnClickedgaussfilter()
 
 }
 
-
+//中值滤波，并去除椒盐噪声
 void CMFCAppDlg::OnBnClickedmedianfilter()
 {
-	//中值滤波，并去除椒盐噪声
 	CString str_text;
 	text_num.GetWindowTextA(str_text);
 	int num = _ttoi(str_text);//CString转int
@@ -315,9 +343,9 @@ void CMFCAppDlg::OnBnClickedmedianfilter()
 
 }
 
+// 二值化
 void CMFCAppDlg::OnBnClickedbinary()
 {
-	// 二值化
 	int myBinaryProcess(Mat & image);
 	string str_src = strFilePath.GetBuffer(0);//CString转string
 	Mat host_src = imread(str_src, IMREAD_COLOR);
@@ -356,4 +384,130 @@ void CMFCAppDlg::OnBnClickedbinary()
 }
 
 
+//腐蚀
+void CMFCAppDlg::OnBnClickederode()
+{
+	int myPicErode(Mat & image);
+	string str_src = strFilePath.GetBuffer(0);//CString转string
+	Mat host_src = imread(str_src, IMREAD_GRAYSCALE);
+	if (!host_src.data)
+	{
+		MessageBox("读取图片错误，请重新输入正确路径！", "error");
+		return;
+	}
+	myPicErode(host_src);
+	CString result_path = "F:/image_result/result.jpg";
+	CRect rect;
+	CImage image;
+	image.Load(result_path);
+	int cx = image.GetWidth();
+	int cy = image.GetHeight();
+	CWnd* pWnd = GetDlgItem(pic_res);//获取控件句柄
+	//获取Picture Control控件的区域的大小  
+	pWnd->GetClientRect(&rect);
+	CDC* pDc = pWnd->GetDC();//获取picture control的DC  
+	//设置指定设备环境中的位图拉伸模式
+	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+	SetStretchBltMode(pDc->m_hDC, ModeOld);
+	//释放资源
+	ReleaseDC(pDc);
+}
 
+//膨胀
+void CMFCAppDlg::OnBnClickeddilate()
+{
+	int myPicDilate(Mat & image);
+	string str_src = strFilePath.GetBuffer(0);//CString转string
+	Mat host_src = imread(str_src, IMREAD_GRAYSCALE);
+	if (!host_src.data)
+	{
+		MessageBox("读取图片错误，请重新输入正确路径！", "error");
+		return;
+	}
+	myPicDilate(host_src);
+	CString result_path = "F:/image_result/result.jpg";
+	CRect rect;
+	CImage image;
+	image.Load(result_path);
+	int cx = image.GetWidth();
+	int cy = image.GetHeight();
+	CWnd* pWnd = GetDlgItem(pic_res);//获取控件句柄
+	//获取Picture Control控件的区域的大小  
+	pWnd->GetClientRect(&rect);
+	CDC* pDc = pWnd->GetDC();//获取picture control的DC  
+	//设置指定设备环境中的位图拉伸模式
+	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+	SetStretchBltMode(pDc->m_hDC, ModeOld);
+	//释放资源
+	ReleaseDC(pDc);
+}
+
+//laplacian滤波
+void CMFCAppDlg::OnBnClickedlaplacian()
+{
+	int myLaplacianFilter(Mat & image);
+
+	string str_src = strFilePath.GetBuffer(0);//CString转string
+	Mat host_src = imread(str_src, IMREAD_COLOR);
+	if (!host_src.data)
+	{
+		MessageBox("读取图片错误，请重新输入正确路径！", "error");
+		return;
+	}
+	myLaplacianFilter(host_src);
+	
+	CString result_path = "F:/image_result/result.jpg";
+	CRect rect;
+	CImage image;
+	image.Load(result_path);
+	int cx = image.GetWidth();
+	int cy = image.GetHeight();
+	CWnd* pWnd = GetDlgItem(pic_res);//获取控件句柄
+	//获取Picture Control控件的区域的大小  
+	pWnd->GetClientRect(&rect);
+	CDC* pDc = pWnd->GetDC();//获取picture control的DC  
+	//设置指定设备环境中的位图拉伸模式
+	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+	SetStretchBltMode(pDc->m_hDC, ModeOld);
+	//释放资源
+	ReleaseDC(pDc);
+}
+
+//sobel滤波
+void CMFCAppDlg::OnBnClickedsobel()
+{
+	int mySobel(Mat & image);
+	string str_src = strFilePath.GetBuffer(0);//CString转string
+	Mat host_src = imread(str_src, IMREAD_COLOR);
+	if (!host_src.data)
+	{
+		MessageBox("读取图片错误，请重新输入正确路径！", "error");
+		return;
+	}
+	mySobel(host_src);
+
+	CString result_path = "F:/image_result/result.jpg";
+	CRect rect;
+	CImage image;
+	image.Load(result_path);
+	int cx = image.GetWidth();
+	int cy = image.GetHeight();
+	CWnd* pWnd = GetDlgItem(pic_res);//获取控件句柄
+	//获取Picture Control控件的区域的大小  
+	pWnd->GetClientRect(&rect);
+	CDC* pDc = pWnd->GetDC();//获取picture control的DC  
+	//设置指定设备环境中的位图拉伸模式
+	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+	SetStretchBltMode(pDc->m_hDC, ModeOld);
+	//释放资源
+	ReleaseDC(pDc);
+
+}
