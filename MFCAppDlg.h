@@ -54,4 +54,14 @@ public:
 	afx_msg void OnBnClickeddilate();
 	afx_msg void OnBnClickedlaplacian();
 	afx_msg void OnBnClickedsobel();
+	afx_msg void OnBnClickedinvisible();
+	afx_msg void OnBnClickedloadresult();
+	afx_msg void OnBnClickedgrayhistogram();
+	afx_msg void OnBnClickedrgbhistogram();
+	// 加速比
+	CEdit text_rate;
+	// cpu执行时间
+	CEdit text_cpu_time;
+	// cuda运行时间
+	CEdit text_cuda_time;
 };

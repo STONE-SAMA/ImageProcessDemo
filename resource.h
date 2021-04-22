@@ -19,9 +19,16 @@
 #define pic_res                         1014
 #define btn_erode                       1015
 #define btn_dilate                      1016
-#define IDC_BUTTON3                     1017
 #define btn_sobel                       1017
 #define btn_laplacian                   1018
+#define btn_invisible                   1021
+#define btn_load_result                 1022
+#define btn_gray_histogram              1023
+#define btn_rgb_histogram               1024
+#define edit_CPU_time                   1025
+#define edit_GPU_time                   1026
+#define IDC_EDIT3                       1027
+#define edit_rate                       1027
 
 // Next default values for new objects
 // 
@@ -29,7 +36,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

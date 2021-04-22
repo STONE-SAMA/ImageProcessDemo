@@ -88,12 +88,11 @@ int myColorProcess()
 }
 
 //直方图均衡+时间效率比较
-void colorProcess()
+string colorProcess(Mat &image)
 {
-
-	//cv::Mat h_img1 = imread("F:/cuda_pictures/sea.jpg");
-	cv::Mat h_img1 = imread("F:/cuda_pictures/valley.jpg");
-
+	string str;
+	//cv::Mat h_img1 = imread("F:/cuda_pictures/valley.jpg");
+	cv::Mat h_img1 = image;
 	cv::Mat h_img2, h_result;
 	clock_t start, end;
 	start = clock();
@@ -109,7 +108,7 @@ void colorProcess()
 
 	end = clock();
 	double cpu_time = double(end - start) / CLOCKS_PER_SEC;
-	cout << "time = " << cpu_time << "s" << endl;
+	//cout << "time = " << cpu_time << "s" << endl;
 
 	//初始化
 	cv::Mat img_init = imread("F:/cuda_pictures/sea.jpg");
@@ -120,7 +119,8 @@ void colorProcess()
 	GpuMat src, h_result_cuda, g_result;
 	clock_t start_cuda, end_cuda;
 	src.upload(h_img1);
-	start_cuda = clock();
+	start_cuda = clock();//开始计时
+	//BGR转HSV，便于进行直方图均衡化
 	cuda::cvtColor(src, h_result_cuda, cv::COLOR_BGR2HSV);
 	std::vector<GpuMat> vec_channels_cuda;
 	cuda::split(h_result_cuda, vec_channels_cuda);
@@ -132,15 +132,20 @@ void colorProcess()
 	g_result.download(result);
 	//并行计算耗时
 	double cuda_time = double(end_cuda - start_cuda) / CLOCKS_PER_SEC;
-	cout << "cuda time = " << cuda_time << "s" << endl;
+	//cout << "cuda time = " << cuda_time << "s" << endl;
 
 	//加速比
 	double sp = cpu_time / cuda_time;
-	cout << "加速比 = " << sp << endl;
+	//cout << "加速比 = " << sp << endl;
 
-	namedWindow("原始图像", 0);
-	resizeWindow("原始图像", 240, 427);
-	cv::imshow("原始图像", h_img1);
+	//字符串拼接结果
+	str = to_string(cpu_time);
+	str.append("/");
+	str.append(to_string(cuda_time));
+	str.append("/");
+	str.append(to_string(sp));
+
+	//cv::imshow("原始图像", h_img1);
 	drawHistogram(h_img1, "原图直方图");
 
 	//namedWindow("直方图均衡", 0);
@@ -148,12 +153,15 @@ void colorProcess()
 	//cv::imshow("直方图均衡", h_result);
 	//drawHistogram(h_result, "均衡后直方图");
 
-	namedWindow("cuda直方图均衡", 0);
-	resizeWindow("cuda直方图均衡", 240, 427);
-	cv::imshow("cuda直方图均衡", result);
+	//namedWindow("cuda直方图均衡", 0);
+	//resizeWindow("cuda直方图均衡", 240, 427);
+	//cv::imshow("cuda直方图均衡", result);
+	remove("F:/image_result/result.jpg");
+	imwrite("F:/image_result/result.jpg", result);
 	drawHistogram(result, "cuda直方图");
 
 	waitKey(0);
+	return str;
 }
 
 

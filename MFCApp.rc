@@ -81,32 +81,44 @@ IDR_MAINFRAME           ICON                    "res\\MFCApp.ico"
 // Dialog
 //
 
-IDD_MFCAPP_DIALOG DIALOGEX 0, 0, 796, 293
+IDD_MFCAPP_DIALOG DIALOGEX 0, 0, 796, 285
 STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "锐化",Ibtn_laplacian_filter,68,167,36,14
-    PUSHBUTTON      "平滑",btn_average_filter,28,167,36,14
-    PUSHBUTTON      "高斯滤波",btn_gauss_filter,52,61,48,16
-    PUSHBUTTON      "中值滤波",btn_median_filter,52,98,48,16
-    GROUPBOX        "低通滤波",Filter_group,24,48,85,72
-    LTEXT           "噪点个数",text_zaodian,26,83,33,10
-    EDITTEXT        edit_zaodian,64,82,37,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "锐化",Ibtn_laplacian_filter,62,239,36,14
+    PUSHBUTTON      "平滑",btn_average_filter,22,239,36,14
+    PUSHBUTTON      "高斯滤波",btn_gauss_filter,50,48,48,16
+    PUSHBUTTON      "中值滤波",btn_median_filter,50,85,48,16
+    GROUPBOX        "低通滤波",Filter_group,22,35,85,72
+    LTEXT           "噪点个数",text_zaodian,24,70,33,10
+    EDITTEXT        edit_zaodian,62,69,37,12,ES_AUTOHSCROLL
     PUSHBUTTON      "选择图片",btn_choose,389,17,50,14
     CONTROL         "",pic_src,"Static",SS_BLACKFRAME | SS_CENTERIMAGE,125,48,324,216
     GROUPBOX        "原图",IDC_STATIC,120,38,332,232
     EDITTEXT        edit_filepath,185,18,195,12,ES_AUTOHSCROLL | WS_DISABLED
     CTEXT           "图片路径：",IDC_STATIC,138,18,39,13,SS_CENTERIMAGE
-    PUSHBUTTON      "二值化",btn_binary,51,28,47,16
+    PUSHBUTTON      "图像二值化",btn_binary,38,15,47,16
     CONTROL         "",pic_res,"Static",SS_BLACKFRAME,458,48,324,215
     GROUPBOX        "结果",IDC_STATIC,456,38,331,232
-    PUSHBUTTON      "腐蚀",btn_erode,28,185,36,14
-    PUSHBUTTON      "膨胀",btn_dilate,68,185,36,14
-    GROUPBOX        "形态学操作",IDC_STATIC,21,157,90,50
-    PUSHBUTTON      "Sobel",btn_sobel,68,134,37,14
-    PUSHBUTTON      "Laplacian",btn_laplacian,28,134,37,14
-    GROUPBOX        "高通滤波",IDC_STATIC,20,124,90,28
+    PUSHBUTTON      "腐蚀",btn_erode,22,257,36,14
+    PUSHBUTTON      "膨胀",btn_dilate,62,257,36,14
+    GROUPBOX        "形态学操作",IDC_STATIC,17,228,90,46
+    PUSHBUTTON      "Sobel",btn_sobel,67,120,37,14
+    PUSHBUTTON      "Laplacian",btn_laplacian,27,120,37,14
+    GROUPBOX        "高通滤波",IDC_STATIC,19,110,90,28
+    PUSHBUTTON      "btn",btn_invisible,567,14,16,8,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "btn",btn_load_result,590,14,16,8,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "灰度直方图均衡",btn_gray_histogram,35,192,69,14
+    PUSHBUTTON      "RGB直方图均衡",btn_rgb_histogram,35,207,69,14
+    LTEXT           "CPU耗时",IDC_STATIC,32,154,30,8
+    LTEXT           "CUDA耗时",IDC_STATIC,26,166,35,8
+    LTEXT           "加速比",IDC_STATIC,37,177,24,8
+    EDITTEXT        edit_CPU_time,65,152,40,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        edit_GPU_time,65,165,40,12,ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        edit_rate,65,178,40,12,ES_AUTOHSCROLL | WS_DISABLED
+    GROUPBOX        "直方图均衡",IDC_STATIC,16,139,92,85
+    GROUPBOX        "",IDC_STATIC,14,7,100,269
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 310, 177
@@ -170,7 +182,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 789
         TOPMARGIN, 7
-        BOTTOMMARGIN, 286
+        BOTTOMMARGIN, 278
     END
 
     IDD_DIALOG1, DIALOG
