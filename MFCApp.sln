@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MFCApp", "MFCApp.vcxproj", "{2212B36A-653A-4111-A637-6927AB84E0EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Debug|x64.ActiveCfg = Debug|x64
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Debug|x64.Build.0 = Debug|x64
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Debug|x86.ActiveCfg = Debug|Win32
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Debug|x86.Build.0 = Debug|Win32
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Release|x64.ActiveCfg = Release|x64
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Release|x64.Build.0 = Release|x64
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Release|x86.ActiveCfg = Release|Win32
+		{2212B36A-653A-4111-A637-6927AB84E0EC}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2A0F3428-FF50-48B7-B0FE-2657D99D4B59}
+	EndGlobalSection
+EndGlobal
