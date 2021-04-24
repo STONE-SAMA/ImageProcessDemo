@@ -158,34 +158,40 @@ void CMFCAppDlg::OnBnClickedchoose()
 	fileDlg.DoModal();
 	
 	//UpdateWindow();
-
-	strFilePath = fileDlg.GetPathName();//文件路径
-	strFileName = fileDlg.GetFileName();//文件名
-	
-	text_filepath.SetWindowTextA(strFilePath);
-
 	//MessageBox(strFilePath);
 	//CString EntName = fileDlg.GetFileExt();//文件扩展名
 
-	CRect rect;
-	CImage image;
-	image.Load(strFilePath);
-	int cx = image.GetWidth();
-	int cy = image.GetHeight();
+	if (fileDlg.GetPathName().IsEmpty())
+	{
+		MessageBox("选取图片不能为空！", "error");
+	}
+	else
+	{
+		strFilePath = fileDlg.GetPathName();//文件路径
+		strFileName = fileDlg.GetFileName();//文件名
 
-	CWnd* pWnd = NULL;
-	pWnd = GetDlgItem(pic_src);//获取控件句柄
-	//获取Picture Control控件的区域的大小  
-	pWnd->GetClientRect(&rect);
-	CDC* pDc = NULL;
-	pDc = pWnd->GetDC();//获取picture control的DC  
-	//设置指定设备环境中的位图拉伸模式
-	int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
-	//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
-	image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
-	SetStretchBltMode(pDc->m_hDC, ModeOld);
-	//释放资源
-	ReleaseDC(pDc);
+		text_filepath.SetWindowTextA(strFilePath);
+
+		CRect rect;
+		CImage image;
+		image.Load(strFilePath);
+		int cx = image.GetWidth();
+		int cy = image.GetHeight();
+
+		CWnd* pWnd = NULL;
+		pWnd = GetDlgItem(pic_src);//获取控件句柄
+		//获取Picture Control控件的区域的大小  
+		pWnd->GetClientRect(&rect);
+		CDC* pDc = NULL;
+		pDc = pWnd->GetDC();//获取picture control的DC  
+		//设置指定设备环境中的位图拉伸模式
+		int ModeOld = SetStretchBltMode(pDc->m_hDC, STRETCH_HALFTONE);
+		//从源矩形中复制一个位图到目标矩形，按目标设备设置的模式进行图像的拉伸或压缩
+		image.StretchBlt(pDc->m_hDC, rect, SRCCOPY);
+		SetStretchBltMode(pDc->m_hDC, ModeOld);
+		//释放资源
+		ReleaseDC(pDc);
+	}
 
 	//重启显示结果的图像控件，实现清除图像
 	GetDlgItem(pic_res)->ShowWindow(FALSE);
@@ -594,10 +600,16 @@ void CMFCAppDlg::OnBnClickedrgbhistogram()
 
 	//初始化
 	cv::Mat img_init = imread("F:/cuda_pictures/sea.jpg");
-	GpuMat src_init, init_result;
+	GpuMat src_init, init_result, res_init;
 	src_init.upload(img_init);
 	cuda::cvtColor(src_init, init_result, cv::COLOR_BGR2HSV);
-	
+	/*
+	std::vector<GpuMat> vec_channels_init;
+	cuda::split(init_result, vec_channels_init);
+	cuda::equalizeHist(vec_channels_init[2], vec_channels_init[2]);
+	cuda::merge(vec_channels_init, init_result);
+	cuda::cvtColor(init_result, res_init, cv::COLOR_HSV2BGR);
+	*/
 	//CUDA实现直方图均衡
 	GpuMat src, h_result_cuda, g_result;
 	clock_t start_cuda, end_cuda;
