@@ -270,7 +270,33 @@ void myAverageFilter(Mat &image)
 	Mat result;
 	double temp = (double)1 / 9;
 	Mat kernel = (Mat_<float>(3, 3) << temp, temp, temp, temp, temp, temp, temp, temp, temp);
-	filter2D(host_img, result, CV_8UC3, kernel);
+	//filter2D(host_img, result, CV_8UC3, kernel);
+	/*
+	Mat zero_mat = Mat::zeros(Size(host_img.cols, host_img.rows), CV_8UC1);
+	Mat roi(zero_mat, Rect(100, 2, 1, 280));
+	roi = Scalar(255, 255, 255);
+	vector<Mat> channel(3);
+	split(host_img, channel);
+	vector<Mat> channel4;
+	channel4.push_back(channel[0]);//b
+	channel4.push_back(channel[1]);//g
+	channel4.push_back(channel[2]);//r
+	channel4.push_back(zero_mat);//alpha
+	Mat argb;
+	merge(channel4, argb);
+	//imshow("argb", argb);
+	*/
+	GpuMat d_img, d_res;
+	d_img.upload(host_img);
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
+	cv::Ptr<cv::cuda::Filter> filter;
+	GpuMat src, res;
+	//src.upload(argb);
+	//src.upload(host_img);
+	filter = cuda::createLinearFilter(CV_8UC4, CV_8UC4, kernel);
+	filter->apply(d_res, res);
+	res.download(result);
+	
 	remove("F:/image_result/result.jpg");
 	imwrite("F:/image_result/result.jpg",result);
 	//imshow("原始图像", host_img);
@@ -290,13 +316,20 @@ void myGaussFilter(Mat &image)
 	double temp3 = (double)4 / 16;
 
 	Mat kernel = (Mat_<float>(3, 3) << temp1, temp2, temp1, temp2, temp3, temp2, temp1, temp2, temp1);
-	filter2D(host_img, result, CV_8UC3, kernel);
-
+	//filter2D(host_img, result, CV_8UC3, kernel);
+	GpuMat d_img, d_res;
+	d_img.upload(host_img);
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
+	cv::Ptr<cv::cuda::Filter> filter;
+	GpuMat res;
+	filter = cuda::createLinearFilter(CV_8UC4, CV_8UC4, kernel);
+	filter->apply(d_res, res);
+	res.download(result);
+	//cuda::createGaussianFilter()
 	//imshow("原始图像", host_img);
 	//imshow("3X3高斯滤波", result);
 	remove("F:/image_result/result.jpg");
 	imwrite("F:/image_result/result.jpg", result);
-
 	waitKey(0);
 }
 
@@ -339,21 +372,23 @@ void salt(Mat& image, int n) {
 //中值过滤
 int MedianProcess(Mat &host_src)
 {
-	//Mat host_src = imread("F:/cuda_pictures/agera.jpg",IMREAD_COLOR);
-	//Mat host_src = imread("F:/cuda_pictures/girl.jpg", IMREAD_COLOR);
-	if (!host_src.data)
-	{
-		cout << "读取图片错误，请重新输入正确路径！\n";
-		system("pause");
-		return -1;
-	}
-	//salt(host_src, 10000);
 	Mat host_result;
-	host_result = host_src.clone();
-	cv::medianBlur(host_src, host_result, 3);
-	//imshow("原始图像", host_src);
-	//imshow("中值滤波", host_result);
-	remove("F:/image_result/result_salt2.jpg");//添加噪声后图像
+	//host_result = host_src.clone();
+	//cv::medianBlur(host_src, host_result, 3);
+	
+	GpuMat src_init, init_result, d_res;
+	src_init.upload(host_src);
+	cuda::cvtColor(src_init, init_result, cv::COLOR_BGR2HSV);//转为HSV色彩空间
+	std::vector<GpuMat> vec_channels_init;
+	cuda::split(init_result, vec_channels_init);
+	cv::Ptr<cv::cuda::Filter> filter;
+	filter = cuda::createMedianFilter(CV_8UC1, 3);//中值过滤器,只能对单通道进行
+	filter->apply(vec_channels_init[2], vec_channels_init[2]);//对值通道进行中值过滤
+	cuda::merge(vec_channels_init, init_result);
+	cuda::cvtColor(init_result, d_res, cv::COLOR_HSV2BGR);
+	d_res.download(host_result);
+
+	remove("F:/image_result/result_salt2.jpg");//添加噪声后去噪图像
 	imwrite("F:/image_result/result_salt2.jpg", host_result);
 	waitKey(0);
 	return 0;
@@ -409,24 +444,26 @@ int myPicDilate(Mat& image)
 //sobel算子
 int mySobel(Mat &image)
 {
-	//Mat host_img = imread("F:/cuda_pictures/senna.jpg");
-	//if (!host_img.data)
-	//{
-	//	cout << "读取图片错误，请重新输入正确路径！\n";
-	//	system("pause");
-	//	return -1;
-	//}
-	//imshow("原图像", host_img);
 	Mat host_img = image;
 	Mat result, result_x, result_y;
 
 	Mat kernel_x = (Mat_<float>(3, 3) << -1, 0, 1, -2, 0, 2, -1, 0, 1);
-	filter2D(host_img, result_x, CV_8UC3, kernel_x);
-
+	//filter2D(host_img, result_x, CV_8UC3, kernel_x);
 	Mat kernel_y = (Mat_<float>(3, 3) << -1, -2, -1, 0, 0, 0, 1, 2, 1);
-	filter2D(host_img, result_y, CV_8UC3, kernel_y);
+	//filter2D(host_img, result_y, CV_8UC3, kernel_y);
+	//cv::add(result_x, result_y, result);
 
-	cv::add(result_x, result_y, result);
+	GpuMat d_img, d_res, res;
+	d_img.upload(host_img);
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
+	cv::Ptr<cv::cuda::Filter> filter_x, filter_y;
+	GpuMat res_x, res_y;
+	filter_x = cuda::createLinearFilter(CV_8UC4, CV_8UC4, kernel_x);
+	filter_x->apply(d_res, res_x);
+	filter_y = cuda::createLinearFilter(CV_8UC4, CV_8UC4, kernel_y);
+	filter_y->apply(d_res, res_y);
+	cuda::add(res_x, res_y, res);
+	res.download(result);
 	//cv::imshow("Sobel锐化", result);
 	remove("F:/image_result/result.jpg");
 	imwrite("F:/image_result/result.jpg", result);
@@ -438,36 +475,26 @@ int mySobel(Mat &image)
 //拉普拉斯滤波器
 int myLaplacianFilter(Mat& image)
 {
-	//Mat host_img = imread("F:/cuda_pictures/blobs.png", 0);
 	Mat host_img = image;
-
 	//将原图转化为灰度图
 	GpuMat src, gray;
-
 	clock_t start_cuda, end_cuda;
 	GpuMat d_img, d_result;
 	cv::Ptr<cv::cuda::Filter> filter;
 	int x = 3;//内核大小
 	src.upload(host_img);
-
 	start_cuda = clock();
-
 	cuda::cvtColor(src, gray, COLOR_BGR2GRAY);
-	//d_img.upload(host_img);
 	d_img = gray;
 	filter = cv::cuda::createLaplacianFilter(CV_8UC1, CV_8UC1, x);
 	filter->apply(d_img, d_result);
-
 	end_cuda = clock();
-
 	Mat h_result;
 	d_result.download(h_result);
 	//cv::imshow("原始图像", host_img);
-	//cv::imshow("拉普拉斯锐化", h_result);
+	//cv::imshow("拉普拉斯轮廓提取", h_result);
 	remove("F:/image_result/result.jpg");
 	imwrite("F:/image_result/result.jpg", h_result);
-	
-	//cout << "cuda time = " << double(end_cuda - start_cuda) / CLOCKS_PER_SEC << "s" << endl;
 
 	waitKey(0);
 	return 0;
@@ -490,9 +517,17 @@ int myLaplacianSharpen(Mat &image)
 	//imshow("原图像", host_img);
 	Mat imageEnhance;
 	Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, 0, 5, 0, 0, -1, 0);
-	//Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, 0, 4, 0, 0, -1, 0);
-	//filter2D(h_result, imageEnhance, CV_8UC3, kernel);
-	filter2D(host_img, imageEnhance, CV_8UC3, kernel);
+	//Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, -1, 4, -1, 0, -1, 0);
+
+	GpuMat d_img, d_res, res;
+	d_img.upload(host_img);
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
+	cv::Ptr<cv::cuda::Filter> filter;
+	filter = cuda::createLinearFilter(CV_8UC4, CV_8UC4, kernel);
+	filter->apply(d_res, res);
+	res.download(imageEnhance);
+
+	//filter2D(host_img, imageEnhance, CV_8UC3, kernel);
 	//imshow("拉普拉斯算子图像增强效果", imageEnhance);
 	remove("F:/image_result/result.jpg");
 	imwrite("F:/image_result/result.jpg", imageEnhance);

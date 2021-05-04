@@ -198,6 +198,7 @@ void CMFCAppDlg::OnBnClickedchoose()
 	GetDlgItem(pic_res)->ShowWindow(TRUE);
 }
 
+
 //锐化
 void CMFCAppDlg::OnBnClickedlaplacianfilter()
 {
@@ -532,9 +533,10 @@ void CMFCAppDlg::OnBnClickedgrayhistogram()
 	//CUDA实现直方图均衡
 	clock_t start_cuda, end_cuda;
 	GpuMat d_img, d_result;
-	d_img.upload(h_img);
 	//开始计时
 	start_cuda = clock();
+	d_img.upload(h_img);
+	
 	cv::cuda::equalizeHist(d_img, d_result);
 	//结束计时
 	end_cuda = clock();
@@ -603,18 +605,19 @@ void CMFCAppDlg::OnBnClickedrgbhistogram()
 	GpuMat src_init, init_result, res_init;
 	src_init.upload(img_init);
 	cuda::cvtColor(src_init, init_result, cv::COLOR_BGR2HSV);
-	/*
+	
 	std::vector<GpuMat> vec_channels_init;
 	cuda::split(init_result, vec_channels_init);
 	cuda::equalizeHist(vec_channels_init[2], vec_channels_init[2]);
 	cuda::merge(vec_channels_init, init_result);
 	cuda::cvtColor(init_result, res_init, cv::COLOR_HSV2BGR);
-	*/
+	
 	//CUDA实现直方图均衡
 	GpuMat src, h_result_cuda, g_result;
 	clock_t start_cuda, end_cuda;
-	src.upload(h_img1);
 	start_cuda = clock();//开始计时
+	src.upload(h_img1);
+	
 	//BGR转HSV，便于进行直方图均衡化
 	cuda::cvtColor(src, h_result_cuda, cv::COLOR_BGR2HSV);
 	std::vector<GpuMat> vec_channels_cuda;
