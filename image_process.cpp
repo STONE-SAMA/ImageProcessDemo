@@ -272,6 +272,7 @@ void myAverageFilter(Mat &image)
 	Mat kernel = (Mat_<float>(3, 3) << temp, temp, temp, temp, temp, temp, temp, temp, temp);
 	//filter2D(host_img, result, CV_8UC3, kernel);
 	/*
+	//增加一个值为0的透明度通道
 	Mat zero_mat = Mat::zeros(Size(host_img.cols, host_img.rows), CV_8UC1);
 	Mat roi(zero_mat, Rect(100, 2, 1, 280));
 	roi = Scalar(255, 255, 255);
@@ -398,15 +399,16 @@ int MedianProcess(Mat &host_src)
 int myPicErode(Mat &image)
 {
 	Mat host_img = image;
-	GpuMat d_img, d_result;
+	GpuMat d_img, d_res, result;
 	//定义形态操作的结构元素
 	Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 	d_img.upload(host_img);
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
 	cv::Ptr<cuda::Filter> filter;
-	filter = cuda::createMorphologyFilter(cv::MORPH_ERODE, CV_8UC1, element);
-	filter->apply(d_img, d_result);
+	filter = cuda::createMorphologyFilter(cv::MORPH_ERODE, CV_8UC4, element);
+	filter->apply(d_res, result);
 	Mat h_result;
-	d_result.download(h_result);
+	result.download(h_result);
 
 	//imshow("原始图像", host_img);
 	//imshow("腐蚀图像", h_result);
@@ -421,16 +423,16 @@ int myPicErode(Mat &image)
 int myPicDilate(Mat& image)
 {
 	Mat host_img = image;
-	GpuMat d_img, d_result;
+	GpuMat d_img, d_res, result;
 	//定义形态操作的结构元素
 	Mat element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 	d_img.upload(host_img);
-	//d_img = gray;
+	cuda::cvtColor(d_img, d_res, cv::COLOR_RGB2RGBA);//增加alpha通道
 	cv::Ptr<cuda::Filter> filter;
-	filter = cuda::createMorphologyFilter(cv::MORPH_DILATE, CV_8UC1, element);
-	filter->apply(d_img, d_result);
+	filter = cuda::createMorphologyFilter(cv::MORPH_DILATE, CV_8UC4, element);
+	filter->apply(d_res, result);
 	Mat h_result;
-	d_result.download(h_result);
+	result.download(h_result);
 
 	//imshow("原始图像", host_img);
 	//imshow("膨胀图像", h_result);
@@ -476,19 +478,15 @@ int mySobel(Mat &image)
 int myLaplacianFilter(Mat& image)
 {
 	Mat host_img = image;
-	//将原图转化为灰度图
-	GpuMat src, gray;
-	clock_t start_cuda, end_cuda;
-	GpuMat d_img, d_result;
+	GpuMat src, d_img, d_result;
 	cv::Ptr<cv::cuda::Filter> filter;
 	int x = 3;//内核大小
 	src.upload(host_img);
-	start_cuda = clock();
-	cuda::cvtColor(src, gray, COLOR_BGR2GRAY);
-	d_img = gray;
-	filter = cv::cuda::createLaplacianFilter(CV_8UC1, CV_8UC1, x);
+	//3通道图像转为4通道
+	cuda::cvtColor(src, d_img, cv::COLOR_RGB2RGBA);
+	filter = cv::cuda::createLaplacianFilter(CV_8UC4, CV_8UC4, x);
 	filter->apply(d_img, d_result);
-	end_cuda = clock();
+
 	Mat h_result;
 	d_result.download(h_result);
 	//cv::imshow("原始图像", host_img);
@@ -504,17 +502,10 @@ int myLaplacianSharpen(Mat &image)
 {
 	//Mat host_img = imread("F:/cuda_pictures/tree.jpg");
 	Mat host_img = image;
-	/*
+
 	//调整大小
-	GpuMat d_img, d_result;
-	d_img.upload(host_img);
-	int width = d_img.cols;
-	int height = d_img.size().height;
-	cuda::resize(d_img, d_result, cv::Size(0.7 * width, 0.7 * height), cv::INTER_LINEAR);
-	Mat h_result;
-	d_result.download(h_result);
-	*/
-	//imshow("原图像", host_img);
+	//cuda::resize(d_img, d_result, cv::Size(0.7 * width, 0.7 * height), cv::INTER_LINEAR);
+
 	Mat imageEnhance;
 	Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, 0, 5, 0, 0, -1, 0);
 	//Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, -1, 4, -1, 0, -1, 0);

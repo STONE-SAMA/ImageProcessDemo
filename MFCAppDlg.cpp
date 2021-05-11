@@ -359,7 +359,8 @@ void CMFCAppDlg::OnBnClickederode()
 	OnBnClickedinvisible();
 	int myPicErode(Mat & image);
 	string str_src = strFilePath.GetBuffer(0);//CString转string
-	Mat host_src = imread(str_src, IMREAD_GRAYSCALE);
+	//Mat host_src = imread(str_src, IMREAD_GRAYSCALE);
+	Mat host_src = imread(str_src, IMREAD_COLOR);
 	if (!host_src.data)
 	{
 		MessageBox("读取图片错误，请重新输入正确路径！", "error");
@@ -375,7 +376,7 @@ void CMFCAppDlg::OnBnClickeddilate()
 	OnBnClickedinvisible();
 	int myPicDilate(Mat & image);
 	string str_src = strFilePath.GetBuffer(0);//CString转string
-	Mat host_src = imread(str_src, IMREAD_GRAYSCALE);
+	Mat host_src = imread(str_src, IMREAD_COLOR);
 	if (!host_src.data)
 	{
 		MessageBox("读取图片错误，请重新输入正确路径！", "error");
